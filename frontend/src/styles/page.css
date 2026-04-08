@@ -1,0 +1,31 @@
+.bottom-part {
+  display:flex;
+  flex-direction:row;
+  flex-grow:1;
+  width:100%;
+  
+}
+
+.main-page-container {
+  width:40%;
+  max-width:1400px; 
+  height:200%;
+  display:flex;
+  flex-direction:column;
+  background-color:white;
+  border-radius:10px;
+  box-shadow:0 4px 12px black;
+  overflow:hidden;
+}
+
+@media (max-width:768px) {
+  .bottom-part {
+    flex-direction:column;
+  }
+  .main-page-container {
+    height:auto;
+    width:100%;
+  }
+}
+
+ 
