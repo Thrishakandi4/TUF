@@ -1,37 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Notes.css';
+import { eachDayOfInterval, format } from 'date-fns';
 
 function Notes({ startdate, enddate }) {
-  const [notes, setNotes]=useState({});
-  const [currentnote, setCurrentnote]=useState('');
+  const [notes, setNotes] = useState({});
+  const [currentnote, setCurrentnote] = useState('');
 
   useEffect(() => {
-    const savednotes=localStorage.getItem('notes');
-    if (savednotes) {
-      setNotes(JSON.parse(savednotes));
+    // Load notes from localStorage when the component mounts
+    try {
+      const savednotes = localStorage.getItem('notes');
+      if (savednotes) {
+        setNotes(JSON.parse(savednotes));
+      }
+    } catch (error) {
+      console.error("Failed to parse notes from localStorage", error);
+      setNotes({}); 
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
+    // Save notes to localStorage whenever the notes state changes
+    if (Object.keys(notes).length > 0) {
+      localStorage.setItem('notes', JSON.stringify(notes));
+    }
   }, [notes]);
 
-  const handlenotechange=(e) => {
+  const handlenotechange = (e) => {
     setCurrentnote(e.target.value);
   };
 
-  const handlesavenote=() => {
+  const handlesavenote = () => {
     if (startdate) {
-      const datekey=startdate.toISOString().split('T')[0];
-      const newnotes={ ...notes, [datekey]: currentnote };
+      const newnotes = { ...notes };
+      if (enddate && startdate !== enddate) {
+        const dateRange = eachDayOfInterval({ start: startdate, end: enddate });
+        dateRange.forEach(date => {
+          const datekey = format(date, 'yyyy-MM-dd');
+          newnotes[datekey] = currentnote;
+        });
+      } else {
+        const datekey = format(startdate, 'yyyy-MM-dd');
+        newnotes[datekey] = currentnote;
+      }
       setNotes(newnotes);
     }
   };
 
   useEffect(() => {
     if (startdate) {
-      const datekey=startdate.toISOString().split('T')[0];
+      const datekey = format(startdate, 'yyyy-MM-dd');
       setCurrentnote(notes[datekey] || '');
+    } else {
+      setCurrentnote('');
     }
   }, [startdate, notes]);
 

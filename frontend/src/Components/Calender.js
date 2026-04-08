@@ -24,7 +24,6 @@ function Calender({ setStartdate, setEnddate }) {
   const firstday=startOfWeek(monthstart);
   const lastday=endOfWeek(monthend);
   const days=eachDayOfInterval({ start: firstday, end: lastday });
-
   const nextmonth=() => {
     setIsflipping(true);
     setTimeout(() => {
@@ -42,27 +41,27 @@ function Calender({ setStartdate, setEnddate }) {
   };
 
   const handledateclick=(day) => {
-    if (localstartdate && localenddate) {
-      
+    if (localstartdate && isSameDay(localstartdate, day) && !localenddate) {
       setLocalstartdate(null);
-      setLocalenddate(null);
       setStartdate(null);
+      return;
+    }
+  
+    if (!localstartdate || localenddate) {
+      setLocalstartdate(day);
+      setStartdate(day);
+      setLocalenddate(null);
       setEnddate(null);
-    } else if (localstartdate && !localenddate) {
-      
+    } else {
       if (day < localstartdate) {
+        setLocalenddate(localstartdate);
+        setEnddate(localstartdate);
         setLocalstartdate(day);
         setStartdate(day);
       } else {
         setLocalenddate(day);
         setEnddate(day);
       }
-    } else {
-      
-      setLocalstartdate(day);
-      setLocalenddate(null);
-      setStartdate(day);
-      setEnddate(null);
     }
   };
 
